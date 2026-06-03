@@ -43,6 +43,10 @@ function App() {
                     element={<Passes />}
                 />
 
+                <Route
+                    path="/checklogs"
+                    element={<CheckLogs />}
+                />
             </Routes>
 
         </BrowserRouter>

@@ -23,7 +23,10 @@ function Navbar() {
                 <Link to="/passes">
                     Passes
                 </Link>
-
+                
+                <Link to="/checklogs">
+                    Check Logs
+                </Link>
             </div>
 
         </nav>
