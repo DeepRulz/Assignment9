@@ -74,6 +74,46 @@ function Passes() {
 
         };
 
+    const checkIn =
+        async (passId) => {
+
+            try {
+
+                await API.post(
+                    `/checklog/checkin/${passId}`
+                );
+
+                alert("Visitor Checked In");
+
+            }
+            catch (error) {
+
+                console.log(error);
+
+            }
+
+        };
+
+    const checkOut =
+        async (passId) => {
+
+            try {
+
+                await API.post(
+                    `/checklog/checkout/${passId}`
+                );
+
+                alert("Visitor Checked Out");
+
+            }
+            catch (error) {
+
+                console.log(error);
+
+            }
+
+        };
+
     const downloadPdf =
         (passId) => {
 
@@ -104,42 +144,65 @@ function Passes() {
 
                     {
                         appointments.map(
-                            (appointment) => (
+                            (appointment) => {
 
-                                <div
-                                    key={appointment._id}
-                                    className="rounded-xl bg-white p-4 shadow"
-                                >
+                                const passExists =
+                                    passes.some(
+                                        (pass) =>
+                                            pass.appointmentId?._id ===
+                                            appointment._id
+                                    );
 
-                                    <h3 className="font-bold">
-                                        {
-                                            appointment
-                                                .visitorId
-                                                ?.name
-                                        }
-                                    </h3>
+                                return (
 
-                                    <p>
-                                        {
-                                            appointment
-                                                .purpose
-                                        }
-                                    </p>
-
-                                    <button
-                                        onClick={() =>
-                                            generatePass(
-                                                appointment._id
-                                            )
-                                        }
-                                        className="mt-2 rounded bg-green-500 px-3 py-1 text-white"
+                                    <div
+                                        key={appointment._id}
+                                        className="rounded-xl bg-white p-4 shadow"
                                     >
-                                        Generate Pass
-                                    </button>
 
-                                </div>
+                                        <h3 className="font-bold">
+                                            {
+                                                appointment
+                                                    .visitorId
+                                                    ?.name
+                                            }
+                                        </h3>
 
-                            )
+                                        <p>
+                                            {
+                                                appointment
+                                                    .purpose
+                                            }
+                                        </p>
+
+                                        <p>
+                                            {
+                                                new Date(
+                                                    appointment.visitDate
+                                                ).toLocaleDateString()
+                                            }
+                                        </p>
+
+                                        {
+                                            !passExists &&
+
+                                            <button
+                                                onClick={() =>
+                                                    generatePass(
+                                                        appointment._id
+                                                    )
+                                                }
+                                                className="mt-2 rounded bg-green-500 px-3 py-1 text-white"
+                                            >
+                                                Generate Pass
+                                            </button>
+                                        }
+
+                                    </div>
+
+                                );
+
+                            }
                         )
                     }
 
@@ -176,16 +239,42 @@ function Passes() {
                                         }
                                     </p>
 
-                                    <button
-                                        onClick={() =>
-                                            downloadPdf(
-                                                pass._id
-                                            )
-                                        }
-                                        className="mt-2 rounded bg-blue-500 px-3 py-1 text-white"
-                                    >
-                                        Download PDF
-                                    </button>
+                                    <div className="mt-3 flex flex-wrap gap-2">
+
+                                        <button
+                                            onClick={() =>
+                                                downloadPdf(
+                                                    pass._id
+                                                )
+                                            }
+                                            className="rounded bg-blue-500 px-3 py-1 text-white"
+                                        >
+                                            Download PDF
+                                        </button>
+
+                                        <button
+                                            onClick={() =>
+                                                checkIn(
+                                                    pass._id
+                                                )
+                                            }
+                                            className="rounded bg-green-500 px-3 py-1 text-white"
+                                        >
+                                            Check In
+                                        </button>
+
+                                        <button
+                                            onClick={() =>
+                                                checkOut(
+                                                    pass._id
+                                                )
+                                            }
+                                            className="rounded bg-yellow-500 px-3 py-1 text-white"
+                                        >
+                                            Check Out
+                                        </button>
+
+                                    </div>
 
                                 </div>
 
