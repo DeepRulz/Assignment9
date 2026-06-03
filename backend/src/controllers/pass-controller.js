@@ -3,6 +3,8 @@ const passService =
 
 const Appointment =
     require("../models/appointment-model");
+
+const Pass = require("../models/pass-model");
 const QRCode = require("qrcode");
 const PDFDocument = require("pdfkit");
 exports.generatePass = async (
