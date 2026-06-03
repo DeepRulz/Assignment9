@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Visitors from "./pages/Visitors";
 import Appointments from "./pages/Appointments";
 import Passes from "./pages/Passes";
+import CheckLogs from "./pages/CheckLogs";
 
 function App() {
 
