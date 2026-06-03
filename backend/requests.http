@@ -1,0 +1,99 @@
+### GET request to example server
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "name":"Deep",
+  "email":"deep@test.com",
+  "password":"123456",
+  "role":"admin"
+}
+###
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email":"deep@test.com",
+  "password":"123456"
+}
+> {% client.global.set("token", response.body.token);%}
+
+### Create Visitor
+
+POST http://localhost:5000/api/visitors
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "John Doe",
+  "email": "john@test.com",
+  "phone": "9876543210",
+  "company": "Google",
+  "photo": "john.jpg"
+}
+
+###
+
+### Get Visitors
+
+GET http://localhost:5000/api/visitors
+Authorization: Bearer {{token}}
+
+###
+
+### Update Visitor
+
+PATCH http://localhost:5000/api/visitors/6a200427add69cabcfc9e81e
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "company": "Microsoft"
+}
+
+###
+
+### Delete Visitor
+
+DELETE http://localhost:5000/api/visitors/6a200427add69cabcfc9e81e
+Authorization: Bearer {{token}}
+
+### Create Appointment
+
+POST http://localhost:5000/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "visitorId":"6a2006aabfa2280bac1884ae",
+  "purpose":"Interview",
+  "visitDate":"2026-06-10"
+}
+###
+PATCH http://localhost:5000/api/appointments/6a2006c8bfa2280bac1884b0/approve
+Authorization: Bearer {{token}}
+
+### Generate Pass
+
+POST http://localhost:5000/api/passes/generate/6a2006c8bfa2280bac1884b0
+Authorization: Bearer {{token}}
+
+### Get Passes
+
+GET http://localhost:5000/api/passes/6a206b7db4bf6ec88d48dd99
+Authorization: Bearer {{token}}
+###
+POST http://localhost:5000/api/checklog/checkin/6a206b7db4bf6ec88d48dd99
+Authorization: Bearer {{token}}
+
+###
+POST http://localhost:5000/api/checklog/checkout/6a206b7db4bf6ec88d48dd99
+Authorization: Bearer {{token}}
+
+###
+GET http://localhost:5000/api/checklog
+Authorization: Bearer {{token}}
+
+###
+GET http://localhost:5000/api/passes/pdf/6a20753b90a2dfd715417bb9
+Authorization: Bearer {{token}}
