@@ -1,6 +1,14 @@
 const appointmentService =
     require("../services/appointment-service");
-const {sendEmail} = require("../utils/email");
+
+const {
+    sendEmail
+} = require("../utils/email");
+
+const {
+    sendSMS
+} = require("../utils/sms");
+
 exports.addAppointment = async (
     req,
     res
@@ -108,7 +116,10 @@ exports.addAppointment = async (
 };
 
 exports.getAllAppointments =
-    async (req, res) => {
+    async (
+        req,
+        res
+    ) => {
 
         try {
 
@@ -116,16 +127,24 @@ exports.getAllAppointments =
                 await appointmentService.getAppointments();
 
             res.status(200).json({
+
                 success: true,
-                data: appointments
+
+                data:
+                appointments
+
             });
 
         }
         catch (error) {
 
             res.status(500).json({
+
                 success: false,
-                message: error.message
+
+                message:
+                error.message
+
             });
 
         }
@@ -199,17 +218,24 @@ exports.updateAppointment =
                 );
 
             res.status(200).json({
+
                 success: true,
-                data: appointment
+
+                data:
+                appointment
+
             });
 
         }
         catch (error) {
 
             res.status(500).json({
+
                 success: false,
+
                 message:
                 error.message
+
             });
 
         }
@@ -217,7 +243,10 @@ exports.updateAppointment =
     };
 
 exports.deleteAppointment =
-    async (req, res) => {
+    async (
+        req,
+        res
+    ) => {
 
         try {
 
@@ -227,16 +256,24 @@ exports.deleteAppointment =
                 );
 
             res.status(200).json({
+
                 success: true,
-                data: appointment
+
+                data:
+                appointment
+
             });
 
         }
         catch (error) {
 
             res.status(500).json({
+
                 success: false,
-                message: error.message
+
+                message:
+                error.message
+
             });
 
         }
@@ -244,7 +281,10 @@ exports.deleteAppointment =
     };
 
 exports.approveAppointment =
-    async (req, res) => {
+    async (
+        req,
+        res
+    ) => {
 
         try {
 
@@ -252,37 +292,66 @@ exports.approveAppointment =
                 await appointmentService.approveAppointment(
                     req.params.id
                 );
-            await sendEmail(
 
-                appointment
-                    .visitorId
-                    .email,
+            if (
+                appointment?.visitorId?.email
+            ) {
 
-                "Appointment Approved",
+                await sendEmail(
 
-                `Hello ${appointment.visitorId.name},
+                    appointment.visitorId.email,
 
-                       Your appointment for "${appointment.purpose}"
-                       has been approved.
+                    "Appointment Approved",
 
-                        Visit Date:
-                        ${appointment.visitDate}
-    
-                       Thank You.`
-            );
+                    `Hello ${appointment.visitorId.name},
+
+Your appointment for "${appointment.purpose}" has been approved.
+
+Visit Date:
+${appointment.visitDate}
+
+Thank You.`
+
+                );
+
+            }
+
+            if (
+                appointment?.visitorId?.phone
+            ) {
+
+                await sendSMS(
+
+                    appointment.visitorId.phone,
+
+                    `Your appointment for "${appointment.purpose}" has been approved. Visit Date: ${appointment.visitDate}`
+
+                );
+
+            }
+
             res.status(200).json({
+
                 success: true,
+
                 message:
                     "Appointment approved",
-                data: appointment
+
+                data:
+                appointment
+
             });
 
         }
         catch (error) {
 
             res.status(500).json({
+
                 success: false,
-                message: error.message
+
+                message:
+                error.message
+
             });
 
         }
@@ -290,7 +359,10 @@ exports.approveAppointment =
     };
 
 exports.rejectAppointment =
-    async (req, res) => {
+    async (
+        req,
+        res
+    ) => {
 
         try {
 
@@ -298,34 +370,63 @@ exports.rejectAppointment =
                 await appointmentService.rejectAppointment(
                     req.params.id
                 );
-            await sendEmail(
 
-                appointment
-                    .visitorId
-                    .email,
+            if (
+                appointment?.visitorId?.email
+            ) {
 
-                "Appointment Rejected",
+                await sendEmail(
 
-                `Hello ${appointment.visitorId.name},
+                    appointment.visitorId.email,
 
-Your appointment for "${appointment.purpose}"
-has been rejected.
+                    "Appointment Rejected",
+
+                    `Hello ${appointment.visitorId.name},
+
+Your appointment for "${appointment.purpose}" has been rejected.
 
 Thank You.`
-            );
+
+                );
+
+            }
+
+            if (
+                appointment?.visitorId?.phone
+            ) {
+
+                await sendSMS(
+
+                    appointment.visitorId.phone,
+
+                    `Your appointment for "${appointment.purpose}" has been rejected.`
+
+                );
+
+            }
+
             res.status(200).json({
+
                 success: true,
+
                 message:
                     "Appointment rejected",
-                data: appointment
+
+                data:
+                appointment
+
             });
 
         }
         catch (error) {
 
             res.status(500).json({
+
                 success: false,
-                message: error.message
+
+                message:
+                error.message
+
             });
 
         }
