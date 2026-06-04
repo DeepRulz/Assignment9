@@ -26,7 +26,7 @@ async function seedDatabase() {
     try {
 
         await mongoose.connect(
-            process.env.MONGODB_PASSWORD
+            process.env.MONGODB_URI
         );
 
         console.log(
