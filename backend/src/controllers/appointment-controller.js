@@ -14,27 +14,93 @@ exports.addAppointment = async (
             visitDate
         } = req.body;
 
+        if (
+            !visitorId ||
+            !purpose ||
+            !visitDate
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Visitor, purpose and visit date are required"
+            });
+
+        }
+
+        if (
+            purpose.trim().length < 3
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Purpose must be at least 3 characters"
+            });
+
+        }
+
+        const selectedDate =
+            new Date(visitDate);
+
+        const today =
+            new Date();
+
+        today.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+        if (
+            selectedDate < today
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Visit date cannot be in the past"
+            });
+
+        }
+
         const appointment =
             await appointmentService.createAppointment({
+
                 visitorId,
-                hostId: req.user.id,
+
+                hostId:
+                req.user.id,
+
                 purpose,
+
                 visitDate
+
             });
 
         res.status(201).json({
+
             success: true,
+
             message:
                 "Appointment created",
-            data: appointment
+
+            data:
+            appointment
+
         });
 
     }
     catch (error) {
 
         res.status(500).json({
+
             success: false,
-            message: error.message
+
+            message:
+            error.message
+
         });
 
     }
@@ -67,9 +133,64 @@ exports.getAllAppointments =
     };
 
 exports.updateAppointment =
-    async (req, res) => {
+    async (
+        req,
+        res
+    ) => {
 
         try {
+
+            const {
+                purpose,
+                visitDate
+            } = req.body;
+
+            if (
+                purpose &&
+                purpose.trim().length < 3
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Purpose must be at least 3 characters"
+                });
+
+            }
+
+            if (
+                visitDate
+            ) {
+
+                const selectedDate =
+                    new Date(
+                        visitDate
+                    );
+
+                const today =
+                    new Date();
+
+                today.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+                if (
+                    selectedDate <
+                    today
+                ) {
+
+                    return res.status(400).json({
+                        success: false,
+                        message:
+                            "Visit date cannot be in the past"
+                    });
+
+                }
+
+            }
 
             const appointment =
                 await appointmentService.updateAppointment(
@@ -87,7 +208,8 @@ exports.updateAppointment =
 
             res.status(500).json({
                 success: false,
-                message: error.message
+                message:
+                error.message
             });
 
         }

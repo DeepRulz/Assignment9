@@ -21,13 +21,22 @@ exports.generatePass = async (
         const appointmentId =
             req.params.appointmentId;
 
+        if (!appointmentId) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Appointment ID is required"
+            });
+
+        }
+
         const appointment =
             await Appointment.findById(
                 appointmentId
             )
                 .populate("visitorId")
                 .populate("hostId");
-
 
         if (!appointment) {
 
@@ -52,9 +61,33 @@ exports.generatePass = async (
 
         }
 
-        const qrData =
-            `PASS-${appointmentId}`;
-        const qrImage = await QRCode.toDataURL(qrData);
+        const visitDate =
+            new Date(
+                appointment.visitDate
+            );
+
+        const today =
+            new Date();
+
+        today.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+        if (
+            visitDate < today
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Visit date has already passed"
+            });
+
+        }
+
         const existingPass =
             await Pass.findOne({
                 appointmentId
@@ -69,28 +102,46 @@ exports.generatePass = async (
             });
 
         }
+
+        const qrData =
+            `PASS-${appointmentId}`;
+
+        const qrImage =
+            await QRCode.toDataURL(
+                qrData
+            );
+
         const pass =
             await passService.createPass({
-                appointmentId:
+
                 appointmentId,
-                qrData:
+
                 qrData,
-                qrImage:
+
                 qrImage,
+
                 issuedBy:
                 req.user.id,
+
                 validTill:
                 appointment.visitDate
+
             });
-        await sendEmail(
 
-            appointment
-                .visitorId
-                .email,
+        if (
+            appointment.visitorId &&
+            appointment.visitorId.email
+        ) {
 
-            "Visitor Pass Generated",
+            await sendEmail(
 
-            `Hello ${appointment.visitorId.name},
+                appointment
+                    .visitorId
+                    .email,
+
+                "Visitor Pass Generated",
+
+                `Hello ${appointment.visitorId.name},
 
 Your visitor pass has been generated successfully.
 
@@ -106,26 +157,38 @@ ${pass._id}
 Please carry this pass while visiting.
 
 Thank You.`
-        );
+
+            );
+
+        }
+
         res.status(201).json({
+
             success: true,
+
             message:
                 "Pass generated",
-            data: pass
+
+            data:
+            pass
+
         });
 
     }
     catch (error) {
 
         res.status(500).json({
+
             success: false,
-            message: error.message
+
+            message:
+            error.message
+
         });
 
     }
 
 };
-
 exports.getAllPasses =
     async (req, res) => {
 
@@ -152,7 +215,10 @@ exports.getAllPasses =
     };
 
 exports.getPassById =
-    async (req, res) => {
+    async (
+        req,
+        res
+    ) => {
 
         try {
 
@@ -160,6 +226,16 @@ exports.getPassById =
                 await passService.getPassById(
                     req.params.id
                 );
+
+            if (!pass) {
+
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        "Pass not found"
+                });
+
+            }
 
             res.status(200).json({
                 success: true,
@@ -171,7 +247,8 @@ exports.getPassById =
 
             res.status(500).json({
                 success: false,
-                message: error.message
+                message:
+                error.message
             });
 
         }

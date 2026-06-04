@@ -33,28 +33,89 @@ exports.addVisitor = async (
 
         }
 
+        if (
+            name.trim().length < 2
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Name must be at least 2 characters"
+            });
+
+        }
+
+        const phoneRegex =
+            /^[0-9]{10}$/;
+
+        if (
+            !phoneRegex.test(phone)
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Phone number must contain exactly 10 digits"
+            });
+
+        }
+
+        if (email) {
+
+            const emailRegex =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (
+                !emailRegex.test(email)
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Invalid email format"
+                });
+
+            }
+
+        }
+
         const visitor =
             await visitorService.createVisitor({
+
                 name,
+
                 email,
+
                 phone,
+
                 company,
+
                 photo
+
             });
 
         res.status(201).json({
+
             success: true,
+
             message:
                 "Visitor created successfully",
-            data: visitor
+
+            data:
+            visitor
+
         });
 
     }
     catch (error) {
 
         res.status(500).json({
+
             success: false,
-            message: error.message
+
+            message:
+            error.message
+
         });
 
     }
@@ -72,16 +133,24 @@ exports.getAllVisitors = async (
             await visitorService.getVisitors();
 
         res.status(200).json({
+
             success: true,
-            data: visitors
+
+            data:
+            visitors
+
         });
 
     }
     catch (error) {
 
         res.status(500).json({
+
             success: false,
-            message: error.message
+
+            message:
+            error.message
+
         });
 
     }
@@ -98,6 +167,49 @@ exports.updateVisitor = async (
         const id =
             req.params.id;
 
+        const {
+            email,
+            phone
+        } = req.body;
+
+        if (email) {
+
+            const emailRegex =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (
+                !emailRegex.test(email)
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Invalid email format"
+                });
+
+            }
+
+        }
+
+        if (phone) {
+
+            const phoneRegex =
+                /^[0-9]{10}$/;
+
+            if (
+                !phoneRegex.test(phone)
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Phone number must contain exactly 10 digits"
+                });
+
+            }
+
+        }
+
         const visitor =
             await visitorService.updateVisitor(
                 id,
@@ -105,18 +217,27 @@ exports.updateVisitor = async (
             );
 
         res.status(200).json({
+
             success: true,
+
             message:
                 "Visitor updated",
-            data: visitor
+
+            data:
+            visitor
+
         });
 
     }
     catch (error) {
 
         res.status(500).json({
+
             success: false,
-            message: error.message
+
+            message:
+            error.message
+
         });
 
     }
@@ -139,18 +260,27 @@ exports.deleteVisitor = async (
             );
 
         res.status(200).json({
+
             success: true,
+
             message:
                 "Visitor deleted",
-            data: visitor
+
+            data:
+            visitor
+
         });
 
     }
     catch (error) {
 
         res.status(500).json({
+
             success: false,
-            message: error.message
+
+            message:
+            error.message
+
         });
 
     }
@@ -158,12 +288,27 @@ exports.deleteVisitor = async (
 };
 
 exports.searchVisitors =
-    async (req,res) => {
+    async (
+        req,
+        res
+    ) => {
 
         try {
 
             const query =
                 req.query.q;
+
+            if (
+                !query
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Search query is required"
+                });
+
+            }
 
             const visitors =
                 await visitorService.searchVisitors(
@@ -171,16 +316,24 @@ exports.searchVisitors =
                 );
 
             res.status(200).json({
-                success:true,
-                data: visitors
+
+                success: true,
+
+                data:
+                visitors
+
             });
 
         }
-        catch(error){
+        catch (error) {
 
             res.status(500).json({
-                success:false,
-                message:error.message
+
+                success: false,
+
+                message:
+                error.message
+
             });
 
         }
