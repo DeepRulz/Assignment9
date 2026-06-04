@@ -27,6 +27,9 @@ function Navbar() {
                 <Link to="/checklogs">
                     Check Logs
                 </Link>
+                <Link to="/scanner">
+                    Scanner
+                </Link>
             </div>
 
         </nav>

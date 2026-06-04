@@ -12,9 +12,13 @@ exports.addVisitor = async (
             name,
             email,
             phone,
-            company,
-            photo
+            company
         } = req.body;
+
+        const photo =
+            req.file
+                ? req.file.filename
+                : "";
 
         if (
             !name ||

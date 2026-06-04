@@ -1,6 +1,10 @@
 const passService =
     require("../services/pass-service");
-
+const {
+    sendEmail
+} = require(
+    "../utils/email"
+);
 const Appointment =
     require("../models/appointment-model");
 
@@ -20,7 +24,10 @@ exports.generatePass = async (
         const appointment =
             await Appointment.findById(
                 appointmentId
-            );
+            )
+                .populate("visitorId")
+                .populate("hostId");
+
 
         if (!appointment) {
 
@@ -75,7 +82,31 @@ exports.generatePass = async (
                 validTill:
                 appointment.visitDate
             });
+        await sendEmail(
 
+            appointment
+                .visitorId
+                .email,
+
+            "Visitor Pass Generated",
+
+            `Hello ${appointment.visitorId.name},
+
+Your visitor pass has been generated successfully.
+
+Purpose:
+${appointment.purpose}
+
+Visit Date:
+${appointment.visitDate}
+
+Pass ID:
+${pass._id}
+
+Please carry this pass while visiting.
+
+Thank You.`
+        );
         res.status(201).json({
             success: true,
             message:

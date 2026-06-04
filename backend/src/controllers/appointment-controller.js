@@ -1,6 +1,6 @@
 const appointmentService =
     require("../services/appointment-service");
-
+const {sendEmail} = require("../utils/email");
 exports.addAppointment = async (
     req,
     res
@@ -130,7 +130,24 @@ exports.approveAppointment =
                 await appointmentService.approveAppointment(
                     req.params.id
                 );
+            await sendEmail(
 
+                appointment
+                    .visitorId
+                    .email,
+
+                "Appointment Approved",
+
+                `Hello ${appointment.visitorId.name},
+
+                       Your appointment for "${appointment.purpose}"
+                       has been approved.
+
+                        Visit Date:
+                        ${appointment.visitDate}
+    
+                       Thank You.`
+            );
             res.status(200).json({
                 success: true,
                 message:
@@ -159,7 +176,21 @@ exports.rejectAppointment =
                 await appointmentService.rejectAppointment(
                     req.params.id
                 );
+            await sendEmail(
 
+                appointment
+                    .visitorId
+                    .email,
+
+                "Appointment Rejected",
+
+                `Hello ${appointment.visitorId.name},
+
+Your appointment for "${appointment.purpose}"
+has been rejected.
+
+Thank You.`
+            );
             res.status(200).json({
                 success: true,
                 message:

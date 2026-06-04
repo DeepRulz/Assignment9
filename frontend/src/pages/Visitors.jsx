@@ -19,6 +19,10 @@ function Visitors() {
     const [company, setCompany] =
         useState("");
 
+    const [photo, setPhoto] =
+        useState(null);
+    const [search, setSearch] =
+        useState("");
     const loadVisitors = async () => {
 
         try {
@@ -46,25 +50,81 @@ function Visitors() {
         loadVisitors();
 
     }, []);
+    const searchVisitors =
+        async (query) => {
 
+            try {
+
+                if (!query) {
+
+                    loadVisitors();
+                    return;
+
+                }
+
+                const response =
+                    await API.get(
+                        `/visitors/search?q=${query}`
+                    );
+
+                setVisitors(
+                    response.data.data
+                );
+
+            }
+            catch (error) {
+
+                console.log(error);
+
+            }
+
+        };
     const addVisitor = async () => {
 
         try {
 
+            const formData =
+                new FormData();
+
+            formData.append(
+                "name",
+                name
+            );
+
+            formData.append(
+                "email",
+                email
+            );
+
+            formData.append(
+                "phone",
+                phone
+            );
+
+            formData.append(
+                "company",
+                company
+            );
+
+            if (photo) {
+
+                formData.append(
+                    "photo",
+                    photo
+                );
+
+            }
+
             await API.post(
                 "/visitors",
-                {
-                    name,
-                    email,
-                    phone,
-                    company
-                }
+                formData
             );
 
             setName("");
             setEmail("");
             setPhone("");
             setCompany("");
+            setPhoto(null);
 
             loadVisitors();
 
@@ -110,8 +170,24 @@ function Visitors() {
                 </h1>
 
                 <div className="mb-6 rounded-xl bg-white p-4 shadow">
+                    <input
+                        type="text"
+                        placeholder="Search by name, email or company"
+                        value={search}
+                        onChange={(e) => {
 
-                    <div className="grid gap-3 md:grid-cols-4">
+                            setSearch(
+                                e.target.value
+                            );
+
+                            searchVisitors(
+                                e.target.value
+                            );
+
+                        }}
+                        className="mb-4 w-full rounded border p-2"
+                    />
+                    <div className="grid gap-3 md:grid-cols-5">
 
                         <input
                             type="text"
@@ -161,6 +237,16 @@ function Visitors() {
                             className="rounded border p-2"
                         />
 
+                        <input
+                            type="file"
+                            onChange={(e) =>
+                                setPhoto(
+                                    e.target.files[0]
+                                )
+                            }
+                            className="rounded border p-2"
+                        />
+
                     </div>
 
                     <button
@@ -182,6 +268,18 @@ function Visitors() {
                                     key={visitor._id}
                                     className="rounded-xl bg-white p-4 shadow"
                                 >
+
+                                    {
+                                        visitor.photo &&
+
+                                        <img
+                                            src={
+                                                `${import.meta.env.VITE_API_URL.replace("/api", "")}/uploads/${visitor.photo}`
+                                            }
+                                            alt="visitor"
+                                            className="mb-3 h-20 w-20 rounded-full object-cover"
+                                        />
+                                    }
 
                                     <h2 className="font-bold">
                                         {visitor.name}

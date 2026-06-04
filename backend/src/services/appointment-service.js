@@ -45,34 +45,38 @@ exports.deleteAppointment = async (
 
 };
 
-exports.approveAppointment = async (
-    id
-) => {
+exports.approveAppointment =
+    async (id) => {
 
-    return await Appointment.findByIdAndUpdate(
-        id,
-        {
-            status: "approved"
-        },
-        {
-            new: true
-        }
-    );
+        await Appointment.findByIdAndUpdate(
+            id,
+            {
+                status: "approved"
+            }
+        );
 
-};
+        return await Appointment.findById(
+            id
+        )
+            .populate("visitorId")
+            .populate("hostId");
 
-exports.rejectAppointment = async (
-    id
-) => {
+    };
 
-    return await Appointment.findByIdAndUpdate(
-        id,
-        {
-            status: "rejected"
-        },
-        {
-            new: true
-        }
-    );
+exports.rejectAppointment =
+    async (id) => {
 
-};
+        await Appointment.findByIdAndUpdate(
+            id,
+            {
+                status: "rejected"
+            }
+        );
+
+        return await Appointment.findById(
+            id
+        )
+            .populate("visitorId")
+            .populate("hostId");
+
+    };

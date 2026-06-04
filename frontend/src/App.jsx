@@ -10,7 +10,7 @@ import Visitors from "./pages/Visitors";
 import Appointments from "./pages/Appointments";
 import Passes from "./pages/Passes";
 import CheckLogs from "./pages/CheckLogs";
-
+import Scanner from "./pages/Scanner";
 function App() {
 
     return (
@@ -48,8 +48,11 @@ function App() {
                     path="/checklogs"
                     element={<CheckLogs />}
                 />
+                <Route
+                    path="/scanner"
+                    element={<Scanner />}
+                />
             </Routes>
-
         </BrowserRouter>
 
     );
