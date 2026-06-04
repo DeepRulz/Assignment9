@@ -18,7 +18,8 @@ function Appointments() {
 
     const [visitDate, setVisitDate] =
         useState("");
-
+    const [statusFilter, setStatusFilter] =
+        useState("all");
     const loadData = async () => {
 
         try {
@@ -124,7 +125,80 @@ function Appointments() {
             }
 
         };
+    const exportCSV = () => {
 
+        const headers =
+            [
+                "Visitor",
+                "Host",
+                "Purpose",
+                "Visit Date",
+                "Status"
+            ];
+
+        const rows =
+            appointments.map(
+                (appointment) => [
+
+                    appointment
+                        .visitorId
+                        ?.name,
+
+                    appointment
+                        .hostId
+                        ?.name,
+
+                    appointment
+                        .purpose,
+
+                    new Date(
+                        appointment.visitDate
+                    ).toLocaleDateString(),
+
+                    appointment
+                        .status
+
+                ]
+            );
+
+        const csvContent =
+            [
+                headers,
+                ...rows
+            ]
+                .map(
+                    (row) =>
+                        row.join(",")
+                )
+                .join("\n");
+
+        const blob =
+            new Blob(
+                [csvContent],
+                {
+                    type:
+                        "text/csv"
+                }
+            );
+
+        const url =
+            window.URL.createObjectURL(
+                blob
+            );
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+        link.href = url;
+
+        link.download =
+            "appointments.csv";
+
+        link.click();
+
+    };
     return (
 
         <div className="min-h-screen bg-gray-100">
@@ -207,11 +281,55 @@ function Appointments() {
                     </button>
 
                 </div>
+                <select
+                    value={statusFilter}
+                    onChange={(e) =>
+                        setStatusFilter(
+                            e.target.value
+                        )
+                    }
+                    className="mb-4 rounded border p-2"
+                >
 
+                    <option value="all">
+                        All Appointments
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                    <option value="approved">
+                        Approved
+                    </option>
+
+                    <option value="rejected">
+                        Rejected
+                    </option>
+
+                </select>
+                <button
+                    onClick={exportCSV}
+                    className="mb-4 ml-3 rounded bg-purple-500 px-4 py-2 text-white"
+                >
+                    Export CSV
+                </button>
                 <div className="space-y-3">
 
                     {
-                        appointments.map(
+                        appointments
+                            .filter(
+                                (appointment) =>
+
+                                    statusFilter ===
+                                    "all"
+
+                                        ? true
+
+                                        : appointment.status ===
+                                        statusFilter
+                            )
+                            .map(
                             (appointment) => (
 
                                 <div

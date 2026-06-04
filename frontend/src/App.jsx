@@ -11,6 +11,8 @@ import Appointments from "./pages/Appointments";
 import Passes from "./pages/Passes";
 import CheckLogs from "./pages/CheckLogs";
 import Scanner from "./pages/Scanner";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
 
     return (
@@ -26,31 +28,55 @@ function App() {
 
                 <Route
                     path="/dashboard"
-                    element={<Dashboard />}
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
                 />
 
                 <Route
                     path="/visitors"
-                    element={<Visitors />}
+                    element={
+                        <ProtectedRoute>
+                            <Visitors />
+                        </ProtectedRoute>
+                    }
                 />
 
                 <Route
                     path="/appointments"
-                    element={<Appointments />}
+                    element={
+                        <ProtectedRoute>
+                            <Appointments />
+                        </ProtectedRoute>
+                    }
                 />
 
                 <Route
                     path="/passes"
-                    element={<Passes />}
+                    element={
+                        <ProtectedRoute>
+                            <Passes />
+                        </ProtectedRoute>
+                    }
                 />
 
                 <Route
                     path="/checklogs"
-                    element={<CheckLogs />}
+                    element={
+                        <ProtectedRoute>
+                            <CheckLogs />
+                        </ProtectedRoute>
+                    }
                 />
                 <Route
                     path="/scanner"
-                    element={<Scanner />}
+                    element={
+                        <ProtectedRoute>
+                            <Scanner />
+                        </ProtectedRoute>
+                    }
                 />
             </Routes>
         </BrowserRouter>
