@@ -2,27 +2,35 @@
 
 ## Project Overview
 
-The Visitor Pass Management System is a MERN Stack application developed to digitize visitor management in organizations. The system replaces traditional manual visitor registers with a digital platform that allows visitor registration, appointment management, pass generation, and visitor check-in/check-out tracking.
+The Visitor Pass Management System is a MERN Stack web application designed to digitize and automate visitor management in organizations. The system replaces traditional paper-based visitor registers with a secure digital platform that supports visitor registration, appointment scheduling, pass generation, visitor tracking, and access management.
 
-The application provides different functionalities for administrators, employees, and security personnel to efficiently manage visitors and maintain visitor records.
+The application provides functionality for administrators, employees, and security personnel to efficiently manage visitors while maintaining accurate records and improving security.
 
 ---
 
 ## Features
 
-### Authentication
+### Authentication & Security
 
 * User Registration
 * User Login
-* JWT-based Authentication
-* Role-based User Management
+* JWT-Based Authentication
+* Protected Routes
+* Password Hashing using bcrypt
+* Role-Based User Management
+
+---
 
 ### Visitor Management
 
 * Add New Visitors
 * View Visitor Details
 * Delete Visitors
+* Upload Visitor Photos
+* Search Visitors by Name, Email, or Company
 * Store Visitor Information
+
+---
 
 ### Appointment Management
 
@@ -31,20 +39,36 @@ The application provides different functionalities for administrators, employees
 * Approve Appointments
 * Reject Appointments
 * Track Appointment Status
+* Appointment Status Filtering
+
+---
 
 ### Pass Management
 
 * Generate Visitor Passes
 * QR Code Generation
-* Download Pass as PDF
+* Download Visitor Pass as PDF
 * Prevent Duplicate Pass Generation
+* Pass Validation
 
-### Check-In / Check-Out
+---
+
+### Check-In / Check-Out Management
 
 * Visitor Check-In
 * Visitor Check-Out
 * Check Log History
-* Time Tracking
+* Entry and Exit Time Tracking
+
+---
+
+### Notifications
+
+* Email Notification on Appointment Approval
+* Email Notification on Appointment Rejection
+* Email Notification on Pass Generation
+
+---
 
 ### Dashboard
 
@@ -52,6 +76,26 @@ The application provides different functionalities for administrators, employees
 * Total Appointments Count
 * Total Passes Count
 * Total Check Logs Count
+* System Overview Statistics
+
+---
+
+### Search, Filter & Export
+
+* Visitor Search
+* Appointment Status Filter
+* CSV Export for Reports
+
+---
+
+### Demo Data Support
+
+* Database Seed Script
+* Automatic Creation of Sample Users
+* Automatic Creation of Sample Visitors
+* Automatic Creation of Sample Appointments
+* Automatic Creation of Sample Passes
+* Automatic Creation of Sample Check Logs
 
 ---
 
@@ -71,13 +115,15 @@ The application provides different functionalities for administrators, employees
 
 ### Database
 
-* MongoDB
+* MongoDB Atlas
 * Mongoose
 
 ### Additional Libraries
 
 * JSON Web Token (JWT)
 * bcryptjs
+* Nodemailer
+* Multer
 * QRCode
 * PDFKit
 * CORS
@@ -90,21 +136,25 @@ The application provides different functionalities for administrators, employees
 Visitor-Pass-Management-System
 
 ├── backend
-│   ├── controllers
-│   ├── middleware
-│   ├── models
-│   ├── routes
-│   ├── services
-│   ├── config
-│   └── index.js
+│
+├── controllers
+├── middleware
+├── models
+├── routes
+├── services
+├── uploads
+├── utils
+├── seed.js
+├── app.js
+└── index.js
 │
 ├── frontend
-│   ├── src
-│   │   ├── components
-│   │   ├── pages
-│   │   ├── services
-│   │   └── App.jsx
-│   └── public
+│
+├── src
+│   ├── components
+│   ├── pages
+│   ├── services
+│   └── App.jsx
 │
 └── README.md
 ```
@@ -115,40 +165,58 @@ Visitor-Pass-Management-System
 
 ### User
 
-* name
-* email
-* password
-* role
+| Field    | Type   |
+| -------- | ------ |
+| name     | String |
+| email    | String |
+| password | String |
+| role     | String |
+
+---
 
 ### Visitor
 
-* name
-* email
-* phone
-* company
-* photo
+| Field   | Type   |
+| ------- | ------ |
+| name    | String |
+| email   | String |
+| phone   | String |
+| company | String |
+| photo   | String |
+
+---
 
 ### Appointment
 
-* visitorId
-* hostId
-* purpose
-* visitDate
-* status
+| Field     | Type     |
+| --------- | -------- |
+| visitorId | ObjectId |
+| hostId    | ObjectId |
+| purpose   | String   |
+| visitDate | Date     |
+| status    | String   |
+
+---
 
 ### Pass
 
-* appointmentId
-* qrData
-* qrImage
-* issuedBy
-* validTill
+| Field         | Type     |
+| ------------- | -------- |
+| appointmentId | ObjectId |
+| qrData        | String   |
+| qrImage       | String   |
+| issuedBy      | ObjectId |
+| validTill     | Date     |
+
+---
 
 ### CheckLog
 
-* passId
-* checkInTime
-* checkOutTime
+| Field        | Type     |
+| ------------ | -------- |
+| passId       | ObjectId |
+| checkInTime  | Date     |
+| checkOutTime | Date     |
 
 ---
 
@@ -158,10 +226,13 @@ Visitor-Pass-Management-System
 
 ```bash
 git clone <repository-url>
+
 cd Visitor-Pass-Management-System
 ```
 
-### Backend Setup
+---
+
+## Backend Setup
 
 ```bash
 cd backend
@@ -173,11 +244,17 @@ Create a `.env` file:
 
 ```env
 PORT=5000
+
 MONGODB_URI=your_mongodb_connection_string
+
 JWT_SECRET=your_secret_key
+
+EMAIL_USER=your_email@gmail.com
+
+EMAIL_PASS=your_app_password
 ```
 
-Run backend:
+Run Backend:
 
 ```bash
 npm start
@@ -185,7 +262,7 @@ npm start
 
 ---
 
-### Frontend Setup
+## Frontend Setup
 
 ```bash
 cd frontend
@@ -199,11 +276,31 @@ Create a `.env` file:
 VITE_API_URL=http://localhost:5000/api
 ```
 
-Run frontend:
+Run Frontend:
 
 ```bash
 npm run dev
 ```
+
+---
+
+## Demo Data
+
+To populate the database with sample records:
+
+```bash
+npm run seed
+```
+
+The seed script creates:
+
+* Admin User
+* Employee User
+* Security User
+* Sample Visitors
+* Sample Appointments
+* Sample Passes
+* Sample Check Logs
 
 ---
 
@@ -213,85 +310,127 @@ npm run dev
 
 ```http
 POST /api/auth/register
+
 POST /api/auth/login
 ```
+
+---
 
 ### Visitors
 
 ```http
 GET    /api/visitors
+
 POST   /api/visitors
-GET    /api/visitors/:id
+
+PATCH  /api/visitors/:id
+
 DELETE /api/visitors/:id
+
+GET    /api/visitors/search?q=
 ```
+
+---
 
 ### Appointments
 
 ```http
 GET   /api/appointments
+
 POST  /api/appointments
+
 PATCH /api/appointments/:id/approve
+
 PATCH /api/appointments/:id/reject
 ```
+
+---
 
 ### Passes
 
 ```http
 GET  /api/passes
+
 GET  /api/passes/:id
+
 POST /api/passes/generate/:appointmentId
+
 GET  /api/passes/pdf/:id
 ```
+
+---
 
 ### Check Logs
 
 ```http
 GET  /api/checklog
+
 POST /api/checklog/checkin/:passId
+
 POST /api/checklog/checkout/:passId
 ```
 
 ---
 
-## Workflow
+## System Workflow
 
 1. User logs into the system.
 2. Visitor is registered.
-3. Appointment is created for the visitor.
-4. Appointment is approved.
-5. Visitor pass is generated.
-6. QR Code and PDF pass are created.
-7. Visitor checks in.
-8. Visitor checks out.
-9. Check logs are stored and displayed.
+3. Visitor photo is uploaded.
+4. Appointment is created.
+5. Appointment is approved or rejected.
+6. Email notification is sent.
+7. Visitor pass is generated.
+8. QR code and PDF pass are created.
+9. Pass generation email is sent.
+10. Visitor checks in.
+11. Visitor checks out.
+12. Check logs are stored and displayed.
+
+---
+
+## Deployment
+
+### Frontend
+
+Netlify
+
+### Backend
+
+Render
+
+### Database
+
+MongoDB Atlas
 
 ---
 
 ## Challenges Faced
 
 * Understanding MongoDB relationships using Mongoose references.
-* Implementing JWT authentication and authorization.
-* Generating QR codes dynamically.
-* Creating downloadable PDF visitor passes.
-* Managing frontend-backend integration using Axios.
-* Handling deployment and environment variables.
+* Implementing JWT Authentication and Authorization.
+* Handling file uploads using Multer.
+* Sending emails using Nodemailer.
+* Generating QR Codes dynamically.
+* Creating downloadable PDF Visitor Passes.
+* Managing frontend-backend communication using Axios.
+* Deploying frontend and backend separately.
+* Managing environment variables securely.
 
 ---
 
 ## Future Improvements
 
-* Email Notifications
-* SMS Notifications
 * QR Code Scanner Integration
-* Visitor Photo Upload
-* Multi-location Support
+* SMS Notifications
+* Multi-Location Support
 * Analytics Dashboard
-* Export Reports to Excel/PDF
+* PDF Report Export
 * OTP Verification
+* Mobile Application
 
 ---
 
 ## Author
 
-Deep Shah
-
+**Deep Shah**
