@@ -1,7 +1,16 @@
 import { Link } from "react-router-dom";
 
 function Navbar() {
+    const logout = () => {
 
+        localStorage.removeItem(
+            "token"
+        );
+
+        window.location.href =
+            "/";
+
+    };
     return (
 
         <nav className="bg-blue-600 p-4 text-white">
@@ -30,6 +39,12 @@ function Navbar() {
                 <Link to="/scanner">
                     Scanner
                 </Link>
+                <button
+                    onClick={logout}
+                    className="rounded bg-red-500 px-3 py-1 text-white"
+                >
+                    Logout
+                </button>
             </div>
 
         </nav>
