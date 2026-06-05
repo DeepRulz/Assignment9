@@ -17,19 +17,30 @@ exports.addAppointment = async (req, res) => {
         if (selectedDate < today) {
             return res.status(400).json({ success: false, message: "Visit date cannot be in the past" });
         }
-        const appointment = await appointmentService.createAppointment({
+        const appointmentData = {
             visitorId,
-            hostId: req.user.id,
             purpose,
             visitDate
-        });
+        };
+        if (
+            req.user.role === "visitor"
+        ) {
+            appointmentData.hostId = null;
+            appointmentData.status = "pending";
+        }
+        else {
+            appointmentData.hostId = req.user.id;
+        }
+        const appointment =
+            await appointmentService.createAppointment(
+                appointmentData
+            );
         console.log("Appointment created:", appointment._id);
         res.status(201).json({ success: true, message: "Appointment created", data: appointment });
         } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
 exports.getAllAppointments = async (req, res) => {
     try {
         const appointments = await appointmentService.getAppointments();
@@ -38,7 +49,6 @@ exports.getAllAppointments = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
 exports.updateAppointment = async (req, res) => {
     try {
         const { purpose, visitDate } = req.body;
@@ -59,7 +69,6 @@ exports.updateAppointment = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
 exports.deleteAppointment = async (req, res) => {
     try {
         const appointment = await appointmentService.deleteAppointment(req.params.id);
@@ -68,7 +77,6 @@ exports.deleteAppointment = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
 exports.approveAppointment = async (req, res) => {
     try {
         const appointment = await appointmentService.approveAppointment(req.params.id);
@@ -90,7 +98,6 @@ exports.approveAppointment = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
 exports.rejectAppointment = async (req, res) => {
     try {
         const appointment = await appointmentService.rejectAppointment(req.params.id);

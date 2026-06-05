@@ -3,24 +3,17 @@ const { body } = require("express-validator");
 const validate = require("../middleware/validate");
 
 const router = express.Router();
-
-const auth =
-    require("../middleware/auth");
-
-const roleCheck =
-    require("../middleware/role");
-
-const appointmentController =
-    require(
-        "../controllers/appointment-controller"
-    );
+const auth = require("../middleware/auth");
+const roleCheck = require("../middleware/role");
+const appointmentController = require("../controllers/appointment-controller");
 
 router.post(
     "/",
     auth,
     roleCheck(
         "admin",
-        "employee"
+        "employee",
+        "visitor"
     ),
 
     body("visitorId")
