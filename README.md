@@ -460,17 +460,63 @@ This project served as a practical exercise in applying MERN Stack concepts, und
 * Debugging deployment issues on Netlify and Render.
 * Implementing validation and security checks.
 
----
+## Testing Performed
 
-# Future Improvements
+The application was tested end-to-end using sample users, visitors, appointments, passes, and check logs.
 
-* QR Code Scanner Integration
+### Authentication
+
+* User Registration
+* User Login
+* JWT Token Verification
+* Role-Based Access Control
+
+### Visitor Management
+
+* Add Visitor
+* Delete Visitor
+* Search Visitors
+* Upload Visitor Photos
+
+### Appointment Management
+
+* Create Appointment
+* Approve Appointment
+* Reject Appointment
+
+### Pass Management
+
+* Generate Visitor Pass
+* Download PDF Pass
+* QR Code Generation
+
+### QR Scanner
+
+* Valid QR Detection
+* Invalid QR Rejection
+* Automatic Check-In
+* Automatic Check-Out
+
+### Notifications
+
+* Appointment Approval Email
+* Appointment Rejection Email
+* Pass Generation Email
 * SMS Notifications
-* Multi-Location Support
-* Analytics Dashboard
-* PDF Report Export
-* OTP Verification
-* Mobile Application
+
+### Security Features
+
+* Protected Routes
+* Input Validation
+* Rate Limiting
+* Restricted CORS
+* Password Hashing
+
+### Deployment
+
+* Frontend deployed on Netlify
+* Backend deployed on Render
+* Database hosted on MongoDB Atlas
 
 ---
 

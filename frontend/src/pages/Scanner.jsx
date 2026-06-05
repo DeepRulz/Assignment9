@@ -1,76 +1,51 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { QrReader } from "react-qr-reader";
 import API from "../services/api";
 import Navbar from "../components/Navbar";
 
 function Scanner() {
 
-    const [result, setResult] =
-        useState("");
+    const [result, setResult] = useState("");
+    const [message, setMessage] = useState("");
 
-    const [message, setMessage] =
-        useState("");
+    const handleScan = async (scanResult) => {
 
-    const handleScan =
-        async (scanResult) => {
+        if (!scanResult) {
+            return;
+        }
 
-            if (!scanResult) {
+        try {
 
-                return;
+            const qrData = scanResult.text;
 
-            }
+            setResult(qrData);
 
-            try {
+            const response = await API.post(
+                "/checklog/scan",
+                { qrData }
+            );
 
-                const qrData =
-                    scanResult?.text;
+            setMessage(response.data.message);
 
-                setResult(
-                    qrData
-                );
+            toast.success(
+                response.data.message
+            );
 
-                const passesResponse =
-                    await API.get(
-                        "/passes"
-                    );
+        }
+        catch (error) {
 
-                const pass =
-                    passesResponse.data.data.find(
-                        (pass) =>
-                            pass.qrData ===
-                            qrData
-                    );
+            const errorMessage =
+                error.response?.data?.message ||
+                "Scan Failed";
 
-                if (!pass) {
+            setMessage(errorMessage);
 
-                    setMessage(
-                        "Pass not found"
-                    );
+            toast.error(errorMessage);
 
-                    return;
+        }
 
-                }
-
-                await API.post(
-                    `/checklog/checkin/${pass._id}`
-                );
-
-                setMessage(
-                    "Visitor Checked In Successfully"
-                );
-
-            }
-            catch (error) {
-
-                console.log(error);
-
-                setMessage(
-                    "Check In Failed"
-                );
-
-            }
-
-        };
+    };
 
     return (
 
@@ -88,26 +63,17 @@ function Scanner() {
 
                     <QrReader
                         constraints={{
-                            facingMode:
-                                "environment"
+                            facingMode: "environment"
                         }}
-                        onResult={(
-                            result,
-                            error
-                        ) => {
+                        onResult={(result) => {
 
                             if (result) {
-
-                                handleScan(
-                                    result
-                                );
-
+                                handleScan(result);
                             }
 
                         }}
                         style={{
-                            width:
-                                "100%"
+                            width: "100%"
                         }}
                     />
 

@@ -1,48 +1,38 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import API from "../services/api";
 import Navbar from "../components/Navbar";
 
 function Passes() {
 
-    const [appointments, setAppointments] =
-        useState([]);
-
-    const [passes, setPasses] =
-        useState([]);
+    const [appointments, setAppointments] = useState([]);
+    const [passes, setPasses] = useState([]);
 
     const loadData = async () => {
 
         try {
 
-            const appointmentResponse =
-                await API.get(
-                    "/appointments"
-                );
+            const appointmentResponse = await API.get("/appointments");
 
             const approvedAppointments =
                 appointmentResponse.data.data.filter(
                     (appointment) =>
-                        appointment.status ===
-                        "approved"
+                        appointment.status === "approved"
                 );
 
-            setAppointments(
-                approvedAppointments
-            );
+            setAppointments(approvedAppointments);
 
-            const passResponse =
-                await API.get(
-                    "/passes"
-                );
+            const passResponse = await API.get("/passes");
 
-            setPasses(
-                passResponse.data.data
-            );
+            setPasses(passResponse.data.data);
 
         }
         catch (error) {
 
-            console.log(error);
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to load passes"
+            );
 
         }
 
@@ -54,76 +44,114 @@ function Passes() {
 
     }, []);
 
-    const generatePass =
-        async (appointmentId) => {
+    const generatePass = async (appointmentId) => {
 
-            try {
+        try {
 
-                await API.post(
-                    `/passes/generate/${appointmentId}`
-                );
-
-                loadData();
-
-            }
-            catch (error) {
-
-                console.log(error);
-
-            }
-
-        };
-
-    const checkIn =
-        async (passId) => {
-
-            try {
-
-                await API.post(
-                    `/checklog/checkin/${passId}`
-                );
-
-                alert("Visitor Checked In");
-
-            }
-            catch (error) {
-
-                console.log(error);
-
-            }
-
-        };
-
-    const checkOut =
-        async (passId) => {
-
-            try {
-
-                await API.post(
-                    `/checklog/checkout/${passId}`
-                );
-
-                alert("Visitor Checked Out");
-
-            }
-            catch (error) {
-
-                console.log(error);
-
-            }
-
-        };
-
-    const downloadPdf =
-        (passId) => {
-
-            window.open(
-                `${import.meta.env.VITE_API_URL}/passes/pdf/${passId}`,
-                "_blank"
+            await API.post(
+                `/passes/generate/${appointmentId}`
             );
 
-        };
+            loadData();
 
+            toast.success(
+                "Pass Generated Successfully"
+            );
+
+        }
+        catch (error) {
+
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to generate pass"
+            );
+
+        }
+
+    };
+
+    const checkIn = async (passId) => {
+
+        try {
+
+            await API.post(
+                `/checklog/checkin/${passId}`
+            );
+
+            toast.success(
+                "Visitor Checked In"
+            );
+
+        }
+        catch (error) {
+
+            toast.error(
+                error.response?.data?.message ||
+                "Check In Failed"
+            );
+
+        }
+
+    };
+
+    const checkOut = async (passId) => {
+
+        try {
+
+            await API.post(
+                `/checklog/checkout/${passId}`
+            );
+
+            toast.success(
+                "Visitor Checked Out"
+            );
+
+        }
+        catch (error) {
+
+            toast.error(
+                error.response?.data?.message ||
+                "Check Out Failed"
+            );
+
+        }
+
+    };
+
+    const downloadPdf = (passId) => {
+
+        window.open(
+            `${import.meta.env.VITE_API_URL}/passes/pdf/${passId}`,
+            "_blank"
+        );
+
+        toast.success(
+            "PDF Download Started"
+        );
+
+    };
+    const exportCSV = () => {
+        const headers = [
+            "Pass ID",
+            "Visitor",
+            "Purpose",
+            "Valid Till"
+        ];
+        const rows = passes.map((pass) => [
+            pass._id,
+            pass.appointmentId?.visitorId?.name || "",
+            pass.appointmentId?.purpose || "",
+            new Date(pass.validTill).toLocaleDateString()
+        ]);
+        const csvContent = [headers, ...rows].map((row) => row.join(",")).join("\n");
+        const blob = new Blob([csvContent], {type: "text/csv"});
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "passes.csv";
+        link.click();
+        toast.success("Passes CSV Exported");
+    };
     return (
 
         <div className="min-h-screen bg-gray-100">
@@ -135,76 +163,68 @@ function Passes() {
                 <h1 className="mb-6 text-3xl font-bold">
                     Passes
                 </h1>
-
+                <button
+                    onClick={exportCSV}
+                    className="mb-4 rounded bg-purple-500 px-4 py-2 text-white"
+                >
+                    Export CSV
+                </button>
                 <h2 className="mb-3 text-xl font-semibold">
                     Approved Appointments
                 </h2>
 
                 <div className="mb-8 space-y-3">
 
-                    {
-                        appointments.map(
-                            (appointment) => {
+                    {appointments.map((appointment) => {
 
-                                const passExists =
-                                    passes.some(
-                                        (pass) =>
-                                            pass.appointmentId?._id ===
-                                            appointment._id
-                                    );
+                        const passExists =
+                            passes.some(
+                                (pass) =>
+                                    pass.appointmentId?._id ===
+                                    appointment._id
+                            );
 
-                                return (
+                        return (
 
-                                    <div
-                                        key={appointment._id}
-                                        className="rounded-xl bg-white p-4 shadow"
-                                    >
+                            <div
+                                key={appointment._id}
+                                className="rounded-xl bg-white p-4 shadow"
+                            >
 
-                                        <h3 className="font-bold">
-                                            {
-                                                appointment
-                                                    .visitorId
-                                                    ?.name
-                                            }
-                                        </h3>
+                                <h3 className="font-bold">
+                                    {appointment.visitorId?.name}
+                                </h3>
 
-                                        <p>
-                                            {
-                                                appointment
-                                                    .purpose
-                                            }
-                                        </p>
+                                <p>
+                                    {appointment.purpose}
+                                </p>
 
-                                        <p>
-                                            {
-                                                new Date(
-                                                    appointment.visitDate
-                                                ).toLocaleDateString()
-                                            }
-                                        </p>
+                                <p>
+                                    {new Date(
+                                        appointment.visitDate
+                                    ).toLocaleDateString()}
+                                </p>
 
-                                        {
-                                            !passExists &&
+                                {!passExists && (
 
-                                            <button
-                                                onClick={() =>
-                                                    generatePass(
-                                                        appointment._id
-                                                    )
-                                                }
-                                                className="mt-2 rounded bg-green-500 px-3 py-1 text-white"
-                                            >
-                                                Generate Pass
-                                            </button>
+                                    <button
+                                        onClick={() =>
+                                            generatePass(
+                                                appointment._id
+                                            )
                                         }
+                                        className="mt-2 rounded bg-green-500 px-3 py-1 text-white"
+                                    >
+                                        Generate Pass
+                                    </button>
 
-                                    </div>
+                                )}
 
-                                );
+                            </div>
 
-                            }
-                        )
-                    }
+                        );
+
+                    })}
 
                 </div>
 
@@ -214,73 +234,64 @@ function Passes() {
 
                 <div className="space-y-3">
 
-                    {
-                        passes.map(
-                            (pass) => (
+                    {passes.map((pass) => (
 
-                                <div
-                                    key={pass._id}
-                                    className="rounded-xl bg-white p-4 shadow"
+                        <div
+                            key={pass._id}
+                            className="rounded-xl bg-white p-4 shadow"
+                        >
+
+                            <p>
+                                Pass ID: {pass._id}
+                            </p>
+
+                            <p>
+                                Valid Till:{" "}
+                                {new Date(
+                                    pass.validTill
+                                ).toLocaleDateString()}
+                            </p>
+
+                            <div className="mt-3 flex flex-wrap gap-2">
+
+                                <button
+                                    onClick={() =>
+                                        downloadPdf(
+                                            pass._id
+                                        )
+                                    }
+                                    className="rounded bg-blue-500 px-3 py-1 text-white"
                                 >
+                                    Download PDF
+                                </button>
 
-                                    <p>
-                                        Pass ID:
-                                        {" "}
-                                        {pass._id}
-                                    </p>
+                                <button
+                                    onClick={() =>
+                                        checkIn(
+                                            pass._id
+                                        )
+                                    }
+                                    className="rounded bg-green-500 px-3 py-1 text-white"
+                                >
+                                    Check In
+                                </button>
 
-                                    <p>
-                                        Valid Till:
-                                        {" "}
-                                        {
-                                            new Date(
-                                                pass.validTill
-                                            ).toLocaleDateString()
-                                        }
-                                    </p>
+                                <button
+                                    onClick={() =>
+                                        checkOut(
+                                            pass._id
+                                        )
+                                    }
+                                    className="rounded bg-yellow-500 px-3 py-1 text-white"
+                                >
+                                    Check Out
+                                </button>
 
-                                    <div className="mt-3 flex flex-wrap gap-2">
+                            </div>
 
-                                        <button
-                                            onClick={() =>
-                                                downloadPdf(
-                                                    pass._id
-                                                )
-                                            }
-                                            className="rounded bg-blue-500 px-3 py-1 text-white"
-                                        >
-                                            Download PDF
-                                        </button>
+                        </div>
 
-                                        <button
-                                            onClick={() =>
-                                                checkIn(
-                                                    pass._id
-                                                )
-                                            }
-                                            className="rounded bg-green-500 px-3 py-1 text-white"
-                                        >
-                                            Check In
-                                        </button>
-
-                                        <button
-                                            onClick={() =>
-                                                checkOut(
-                                                    pass._id
-                                                )
-                                            }
-                                            className="rounded bg-yellow-500 px-3 py-1 text-white"
-                                        >
-                                            Check Out
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                            )
-                        )
-                    }
+                    ))}
 
                 </div>
 

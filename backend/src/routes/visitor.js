@@ -1,4 +1,6 @@
 const express = require("express");
+const { body } = require("express-validator");
+const validate = require("../middleware/validate");
 
 const router = express.Router();
 
@@ -21,7 +23,25 @@ router.post(
         "admin",
         "employee"
     ),
+
     upload.single("photo"),
+
+    body("name")
+        .trim()
+        .notEmpty()
+        .withMessage("Name is required"),
+
+    body("phone")
+        .isLength({ min: 10 })
+        .withMessage("Valid phone number required"),
+
+    body("email")
+        .optional()
+        .isEmail()
+        .withMessage("Invalid email"),
+
+    validate,
+
     visitorController.addVisitor
 );
 

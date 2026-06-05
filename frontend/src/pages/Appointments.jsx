@@ -1,206 +1,108 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import Navbar from "../components/Navbar";
+import { toast } from "react-toastify";
 
 function Appointments() {
+    const [appointments, setAppointments] = useState([]);
+    const [visitors, setVisitors] = useState([]);
+    const [visitorId, setVisitorId] = useState("");
+    const [purpose, setPurpose] = useState("");
+    const [visitDate, setVisitDate] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
 
-    const [appointments, setAppointments] =
-        useState([]);
-
-    const [visitors, setVisitors] =
-        useState([]);
-
-    const [visitorId, setVisitorId] =
-        useState("");
-
-    const [purpose, setPurpose] =
-        useState("");
-
-    const [visitDate, setVisitDate] =
-        useState("");
-    const [statusFilter, setStatusFilter] =
-        useState("all");
     const loadData = async () => {
-
         try {
-
-            const visitorResponse =
-                await API.get(
-                    "/visitors"
-                );
-
-            setVisitors(
-                visitorResponse.data.data
+            const visitorResponse = await API.get("/visitors");
+            setVisitors(visitorResponse.data.data);
+            const appointmentResponse = await API.get("/appointments");
+            setAppointments(appointmentResponse.data.data);
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to load data"
             );
-
-            const appointmentResponse =
-                await API.get(
-                    "/appointments"
-                );
-
-            setAppointments(
-                appointmentResponse.data.data
-            );
-
         }
-        catch (error) {
-
-            console.log(error);
-
-        }
-
     };
 
     useEffect(() => {
-
         loadData();
-
     }, []);
 
-    const createAppointment =
-        async () => {
+    const createAppointment = async () => {
+        try {
 
-            try {
+            await API.post("/appointments", {
+                visitorId,
+                purpose,
+                visitDate
+            });
 
-                await API.post(
-                    "/appointments",
-                    {
-                        visitorId,
-                        purpose,
-                        visitDate
-                    }
-                );
+            setVisitorId("");
+            setPurpose("");
+            setVisitDate("");
 
-                setVisitorId("");
-                setPurpose("");
-                setVisitDate("");
+            loadData();
 
-                loadData();
-
-            }
-            catch (error) {
-
-                console.log(error);
-
-            }
-
-        };
-
-    const approveAppointment =
-        async (id) => {
-
-            try {
-
-                await API.patch(
-                    `/appointments/${id}/approve`
-                );
-
-                loadData();
-
-            }
-            catch (error) {
-
-                console.log(error);
-
-            }
-
-        };
-
-    const rejectAppointment =
-        async (id) => {
-
-            try {
-
-                await API.patch(
-                    `/appointments/${id}/reject`
-                );
-
-                loadData();
-
-            }
-            catch (error) {
-
-                console.log(error);
-
-            }
-
-        };
-    const exportCSV = () => {
-
-        const headers =
-            [
-                "Visitor",
-                "Host",
-                "Purpose",
-                "Visit Date",
-                "Status"
-            ];
-
-        const rows =
-            appointments.map(
-                (appointment) => [
-
-                    appointment
-                        .visitorId
-                        ?.name,
-
-                    appointment
-                        .hostId
-                        ?.name,
-
-                    appointment
-                        .purpose,
-
-                    new Date(
-                        appointment.visitDate
-                    ).toLocaleDateString(),
-
-                    appointment
-                        .status
-
-                ]
+            toast.success(
+                "Appointment Created"
             );
 
-        const csvContent =
-            [
-                headers,
-                ...rows
-            ]
-                .map(
-                    (row) =>
-                        row.join(",")
-                )
-                .join("\n");
-
-        const blob =
-            new Blob(
-                [csvContent],
-                {
-                    type:
-                        "text/csv"
-                }
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to create appointment"
             );
 
-        const url =
-            window.URL.createObjectURL(
-                blob
-            );
-
-        const link =
-            document.createElement(
-                "a"
-            );
-
-        link.href = url;
-
-        link.download =
-            "appointments.csv";
-
-        link.click();
-
+        }
     };
-    return (
 
+    const approveAppointment = async (id) => {
+        try {
+            await API.patch(`/appointments/${id}/approve`);
+            loadData();
+        } catch (error) {
+
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to approve appointment"
+            );
+
+        }
+    };
+
+    const rejectAppointment = async (id) => {
+        try {
+            await API.patch(`/appointments/${id}/reject`);
+            loadData();
+        } catch (error) {
+
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to reject appointment"
+            );
+
+        }
+    };
+
+    const exportCSV = () => {
+        const headers = ["Visitor", "Host", "Purpose", "Visit Date", "Status"];
+        const rows = appointments.map((appointment) => [
+            appointment.visitorId?.name,
+            appointment.hostId?.name,
+            appointment.purpose,
+            new Date(appointment.visitDate).toLocaleDateString(),
+            appointment.status,
+        ]);
+        const csvContent = [headers, ...rows].map((row) => row.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "appointments.csv";
+        link.click();
+    };
+return (
         <div className="min-h-screen bg-gray-100">
 
             <Navbar />
@@ -412,9 +314,6 @@ function Appointments() {
             </div>
 
         </div>
-
     );
-
 }
-
 export default Appointments;

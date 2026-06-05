@@ -1,4 +1,6 @@
 const express = require("express");
+const { body } = require("express-validator");
+const validate = require("../middleware/validate");
 
 const router = express.Router();
 
@@ -20,6 +22,22 @@ router.post(
         "admin",
         "employee"
     ),
+
+    body("visitorId")
+        .notEmpty()
+        .withMessage("Visitor required"),
+
+    body("purpose")
+        .trim()
+        .notEmpty()
+        .withMessage("Purpose required"),
+
+    body("visitDate")
+        .notEmpty()
+        .withMessage("Visit date required"),
+
+    validate,
+
     appointmentController.addAppointment
 );
 
