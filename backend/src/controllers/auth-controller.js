@@ -46,8 +46,49 @@ exports.loginUser = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
-        res.status(200).json({ success: true, message: "Login successful", token });
+        console.log("User logged in:", user.email);
+        res.status(200).json({success: true, token, role: user.role});
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
+    }
+};
+exports.registerVisitor = async (req, res) => {
+    try {
+        const {
+            name,
+            email,
+            password
+        } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+        const existingUser = await authService.findUserByEmail(email);
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: "User already exists"
+            });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await authService.createUser({
+                name,
+                email,
+                password: hashedPassword,
+                role: "visitor"
+            });
+        res.status(201).json({
+            success: true,
+            message: "Visitor registered successfully",
+            data: user
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };

@@ -23,8 +23,9 @@ exports.addAppointment = async (req, res) => {
             purpose,
             visitDate
         });
+        console.log("Appointment created:", appointment._id);
         res.status(201).json({ success: true, message: "Appointment created", data: appointment });
-    } catch (error) {
+        } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };

@@ -8,6 +8,7 @@ import Passes from "./pages/Passes";
 import CheckLogs from "./pages/CheckLogs";
 import Scanner from "./pages/Scanner";
 import ProtectedRoute from "./components/ProtectedRoute";
+import VisitorDashboard from "./pages/VisitorDashboard";
 
 function App() {
 
@@ -16,7 +17,14 @@ function App() {
         <BrowserRouter>
 
             <Routes>
-
+                <Route
+                    path="/visitor-dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <VisitorDashboard />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route
                     path="/"
                     element={<Login />}

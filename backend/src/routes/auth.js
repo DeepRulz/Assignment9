@@ -55,5 +55,8 @@ router.get(
 
     }
 );
-
+router.post(
+    "/register-visitor",
+    authController.registerVisitor
+);
 module.exports = router;

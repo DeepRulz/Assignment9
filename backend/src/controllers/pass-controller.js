@@ -47,7 +47,7 @@ exports.generatePass = async (req, res) => {
             issuedBy: req.user.id,
             validTill: appointment.visitDate
         });
-
+        console.log("Pass generated:", pass._id);
         if (appointment.visitorId && appointment.visitorId.email) {
             await sendEmail(
                 appointment.visitorId.email,

@@ -9,7 +9,7 @@ exports.checkIn = async (req, res) => {
         const passId = req.params.passId;
 
         const log = await checklogService.createCheckIn(passId);
-
+        console.log("Visitor checked in:", passId);
         res.status(201).json({
             success: true,
             message: "Checked In",
@@ -31,18 +31,14 @@ exports.checkIn = async (req, res) => {
 exports.checkOut = async (req, res) => {
 
     try {
-
         const passId = req.params.passId;
-
         const log = await checklogService.checkOut(passId);
-
+        console.log("Visitor checked out:", passId);
         if (!log) {
-
             return res.status(404).json({
                 success: false,
                 message: "Check In record not found"
             });
-
         }
 
         res.status(200).json({
