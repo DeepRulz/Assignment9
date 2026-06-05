@@ -11,5 +11,12 @@ const authLimiter = rateLimit({
         message: "Too many login attempts. Please try again later."
     }
 });
+const requiredEnvVars = ["MONGODB_URI", "JWT_SECRET"];
+requiredEnvVars.forEach((envVar) => {
+    if (!process.env[envVar]) {
+        console.error(`${envVar} is missing`);
+        process.exit(1);
+    }
+});
 connectDB();
 app.listen(PORT, () => {console.log(`Server running on port ${PORT}`);});
