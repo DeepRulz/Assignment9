@@ -134,37 +134,6 @@ The application supports multiple user roles and provides facilities for visitor
 
 ---
 
-# Project Structure
-
-```text
-Visitor-Pass-Management-System
-
-├── backend
-│
-├── controllers
-├── middleware
-├── models
-├── routes
-├── services
-├── uploads
-├── utils
-├── seed.js
-├── app.js
-└── index.js
-│
-├── frontend
-│
-├── src
-│   ├── components
-│   ├── pages
-│   ├── services
-│   └── App.jsx
-│
-└── README.md
-```
-
----
-
 # Database Collections
 
 ## User
@@ -424,7 +393,7 @@ MongoDB Atlas
 
 ---
 
-# Development Approach and Academic Integrity
+# Development Approach
 
 This project was developed as a learning-oriented MERN Stack application. Throughout development, emphasis was placed on understanding and implementing the core concepts required for a full-stack web application rather than simply assembling features.
 
@@ -519,7 +488,10 @@ The application was tested end-to-end using sample users, visitors, appointments
 * Database hosted on MongoDB Atlas
 
 ---
+### Github Link:
 
+* https://github.com/DeepRulz/Assignment9
+---
 # Author
 
 **Deep Shah**
